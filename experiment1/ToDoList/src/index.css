@@ -1,0 +1,34 @@
+.todo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+
+.input-group {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.todo-list {
+  width: 250px;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.remove-btn {
+  color: red;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+}
