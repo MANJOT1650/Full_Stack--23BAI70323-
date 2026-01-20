@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# cardBasedLayout
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React + Bootstrap card-based UI that showcases computer science course specializations such as AI/ML, Data Science, Cybersecurity, Cloud & DevOps, Software Engineering, HCI, and more.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Responsive card grid built with React-Bootstrap `Container`, `Row`, `Col`, and `Card` components  
+- Professional cards with course images, category badges, level labels, and call-to-action buttons  
+- Smooth hover animation (lift + shadow) using CSS `transform` and `box-shadow`  
+- Data-driven layout: all cards are configured in a single `cardData` array in `App.js`  
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React (Create React App)
+- Bootstrap 5
+- React-Bootstrap
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js and npm installed
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# Clone the repository
+git clone https://github.com/MANJOT1650/Full_Stack--23BAI70323-/tree/main/experiment2(Bootstrap)/cardbasedlayout
+cd cardBasedLayout
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Install dependencies
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Run in Development
 
-### `npm run eject`
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app will be available at http://localhost:3000 with hot reload.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Build for Production
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm run build
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+An optimized production bundle will be created in the build folder.
 
-## Learn More
+## Project Structure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+cardBasedLayout/
+├─ src/
+│  ├─ App.js        # Card-based layout + specialization data
+│  ├─ App.css       # Global styling and hover animations
+│  ├─ index.js      # React entry + Bootstrap CSS import
+│  └─ index.css     # Basic resets and layout helpers
+└─ public/
+   └─ index.html
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Customization
 
-### Code Splitting
+**Edit cards:**  
+Open `src/App.js` and update the `cardData` array to change titles, descriptions, images, and levels for each specialization.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Update visuals:**  
+Modify `.custom-card`, `.custom-card:hover`, and related styles in `src/App.css` to tweak colors, shadows, or animation speed.
 
-### Analyzing the Bundle Size
+**Change branding:**  
+Adjust the heading and subtitle in the `App` component to use your institute or course catalog name.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## License
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is open source. You may adapt it as a starter for your own React + Bootstrap dashboards or course catalogs.  
+Add your preferred license text (for example, MIT) here.
