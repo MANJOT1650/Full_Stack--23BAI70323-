@@ -38,6 +38,10 @@ npm install
 npm start
 ```
 
+## Output
+
+![image_1](1.png)
+
 The app will be available at http://localhost:3000 with hot reload.
 
 ### Build for Production

@@ -46,6 +46,10 @@ The app will be available at http://localhost:3000 with hot reload.
 npm run build
 ```
 
+## Output
+
+![image_1](1.png)
+
 An optimized production bundle will be created in the build folder.
 
 ## Project Structure
