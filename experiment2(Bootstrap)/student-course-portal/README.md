@@ -108,6 +108,15 @@ npm start
 ```
 
 ---
+## Outputs
+
+![image_1](1.png)
+![image_2](2.png)
+![image_3](3.png)
+![image_4](4.png)
+![image_5](5.png)
+![image_6](6.png)
+
 
 ## ⚠️ Limitations
 
