@@ -49,6 +49,9 @@ git clone https://github.com/MANJOT1650/Full_Stack--23BAI70323-/tree/main/experi
 ```bash
 npm run dev
 ```
+## Output
+
+![image](1.png)
 
 ## 🎨 UI Components Used
 
