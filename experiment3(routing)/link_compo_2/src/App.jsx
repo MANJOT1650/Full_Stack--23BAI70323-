@@ -1,5 +1,6 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import './App.css'
+import { Settings } from './Settings.jsx'
 
 function Home() {
   return (
@@ -35,14 +36,6 @@ function Profile() {
   )
 }
 
-function Settings() {
-  return (
-    <div className="page settings">
-      <h1>Settings Page</h1>
-      <p>Configure your preferences here.</p>
-    </div>
-  )
-}
 
 function App() {
   return (
