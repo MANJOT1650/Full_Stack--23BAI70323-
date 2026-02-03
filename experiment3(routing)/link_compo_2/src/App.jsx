@@ -5,7 +5,12 @@ function Home() {
   return (
     <div className="page home">
       <h1>Home Page</h1>
-      <p>Welcome to the Link Component experiment.</p>
+      <div className="student-info">
+        <h3>Student Details</h3>
+        <p><strong>Name:</strong> Manjot Singh</p>
+        <p><strong>UID:</strong> 23BAI70323</p>
+        <p><strong>Section:</strong> 23ANL-3(B)</p>
+      </div>
     </div>
   )
 }
@@ -13,8 +18,19 @@ function Home() {
 function Profile() {
   return (
     <div className="page profile">
-      <h1>Profile Page</h1>
-      <p>This is the Profile page, accessed via Link.</p>
+      <h1>My Profile</h1>
+      <div className="interview-intro">
+        <h2>About Me</h2>
+        <p>I am a passionate developer with a strong foundation in Full Stack technologies. I love building intuitive user interfaces and solving complex backend challenges.</p>
+        
+        <h2>Programming Skills</h2>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          <li>💻 <strong>Frontend:</strong> HTML, CSS, JavaScript, React</li>
+          <li>⚙️ <strong>Backend:</strong> Node.js, Express</li>
+          <li>🗄️ <strong>Database:</strong> MongoDB, SQL</li>
+          <li>🔧 <strong>Tools:</strong> Git, GitHub, VS Code</li>
+        </ul>
+      </div>
     </div>
   )
 }
