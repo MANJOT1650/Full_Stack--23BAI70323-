@@ -36,6 +36,6 @@ git clone https://github.com/MANJOT1650/Full_Stack--23BAI70323-
     npm run dev
     ```
 
-![alt text](image.png)
-![alt text](image-1.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
 ![alt text](image-2.png)
