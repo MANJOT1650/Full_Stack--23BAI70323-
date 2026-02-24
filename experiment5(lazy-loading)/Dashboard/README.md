@@ -5,7 +5,7 @@ A modern React Dashboard application demonstrating **Code Splitting** and **Lazy
 ## 🎓 Student Details
 - **Name:** Manjot Singh
 - **UID:** 23BAI70323
-- **Section:** 23ANL-3(B)
+- **Section:** 23AML-3(B)
 
 ## 🚀 Features
 - **Route-based Lazy Loading**: Components like `Home`, `Profile`, and `Settings` are loaded only when navigated to.
