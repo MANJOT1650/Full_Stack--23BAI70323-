@@ -15,7 +15,7 @@ This repository demonstrates the end-to-end development of a **RESTful API** cap
 
 ## 🛠️ Tech Stack & Tools Used
 - **Language / Framework:** Java, Spring Boot
-- **IDE:** Eclipse (Spring Tools Suite Integration)
+- **IDE:** Eclipse/VSCode (Spring Tools Suite Integration)
 - **Database:** MySQL Server
 - **API Testing tool:** Postman
 
@@ -65,6 +65,22 @@ Following up the `POST` request, subsequent API checks (such as using the **GET*
 
 ![Postman Additional Request](./5_getpost_psotman.png)
 *Figure 5: Postman verifying data modifications through GET/POST payload checks detailing the updated state of our data source.*
+
+---
+
+### 6. API Testing: Updating Data via PUT Request in Postman
+Using the **PUT** method on `http://localhost:8080/api/students/{id}`, we send an updated JSON body to modify an existing student record. The server processes the request and returns the updated entity confirming the changes.
+
+![Postman PUT Request](./ss/put.png)
+*Figure 6: Postman PUT request updating an existing student record with modified JSON payload.*
+
+---
+
+### 7. API Testing: Deleting Data via DELETE Request in Postman
+Using the **DELETE** method on `http://localhost:8080/api/students/{id}`, we remove a specific student record from the database. The server responds with a success message confirming the deletion.
+
+![Postman DELETE Request](./ss/delete.png)
+*Figure 7: Postman DELETE request removing a student record and returning a confirmation response.*
 
 ---
 
