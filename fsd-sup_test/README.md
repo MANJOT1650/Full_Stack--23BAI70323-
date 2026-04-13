@@ -48,6 +48,18 @@ A comprehensive theme system was implemented:
 
 ---
 
+## 📸 Screenshots
+
+| Login Page | Latest Posts |
+|:---:|:---:|
+| ![Login Page](ss/Screenshot%20(52).png) | ![Latest Posts](ss/Screenshot%20(53).png) |
+
+| Create New Post | Post Details & Comments |
+|:---:|:---:|
+| ![Create Post](ss/Screenshot%20(54).png) | ![Post Details](ss/Screenshot%20(55).png) |
+
+---
+
 ## 💡 Key Learnings
 - **Global State & Themes:** Learning to manage application-wide styling using CSS variables and React state.
 - **Content Metadata:** Implementation of value-added features like reading time estimation and categorization.
