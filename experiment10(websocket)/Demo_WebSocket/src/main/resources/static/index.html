@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .status {
+            font-size: 12px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #51cf66;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .input-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"]:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: #f1f3f5;
+            color: #666;
+            flex: 0.5;
+        }
+
+        .btn-clear:hover {
+            background: #e9ecef;
+        }
+
+        .messages-section {
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.sent {
+            background: #e7f5ff;
+            border-left: 3px solid #667eea;
+            margin-left: 20px;
+        }
+
+        .message.received {
+            background: #f1f3f5;
+            border-left: 3px solid #764ba2;
+            margin-right: 20px;
+        }
+
+        .message.system {
+            background: #fff3bf;
+            border-left: 3px solid #ffd43b;
+            text-align: center;
+            color: #856404;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .message.received .message-sender {
+            color: #764ba2;
+        }
+
+        .messages-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-section::-webkit-scrollbar-track {
+            background: #e9ecef;
+        }
+
+        .messages-section::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 WebSocket Chat</h1>
+            <div class="status">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="form-group">
+                <label for="senderName">Your Name</label>
+                <input 
+                    type="text" 
+                    id="senderName" 
+                    placeholder="Enter your name..." 
+                    value="User"
+                    disabled
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="messageInput">Message</label>
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Type a message..." 
+                    disabled
+                >
+            </div>
+
+            <div class="button-group">
+                <button class="btn-send" id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+                <button class="btn-clear" id="clearBtn" onclick="clearMessages()">Clear</button>
+            </div>
+        </div>
+
+        <div class="messages-section" id="messagesContainer">
+            <div class="empty-state">No messages yet...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    
+    <script>
+        let stompClient = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        let sentMessages = new Set(); // Track sent message IDs
+        
+        const messageContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const senderInput = document.getElementById('senderName');
+        const sendBtn = document.getElementById('sendBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+
+        // Determine WebSocket URL - use relative URL for SockJS
+        const wsUrl = '/ws';
+
+        function connect() {
+            console.log('Attempting to connect to: ' + wsUrl);
+            
+            if (typeof SockJS === 'undefined') {
+                console.error('SockJS not loaded!');
+                addSystemMessage('✗ SockJS library failed to load');
+                return;
+            }
+            
+            if (typeof Stomp === 'undefined') {
+                console.error('STOMP not loaded!');
+                addSystemMessage('✗ STOMP library failed to load');
+                return;
+            }
+            
+            try {
+                const socket = new SockJS(wsUrl);
+                console.log('SockJS socket created');
+                stompClient = Stomp.over(socket);
+                
+                // Disable debug logs
+                stompClient.debug = null;
+                
+                stompClient.connect({}, function(frame) {
+                    console.log('Connected:', frame);
+                    updateStatus(true);
+                    reconnectAttempts = 0;
+                    
+                    // Subscribe to messages
+                    stompClient.subscribe('/topic/messages', function(message) {
+                        const msg = JSON.parse(message.body);
+                        const messageKey = msg.sender + ':' + msg.content + ':' + Date.now();
+                        
+                        // Only display if it's from a different user
+                        if (msg.sender !== (senderInput.value || 'User')) {
+                            displayMessage(msg.sender, msg.content, false);
+                        }
+                    });
+                    
+                    addSystemMessage('✓ Connected to chat server');
+                    enableInputs();
+                }, function(error) {
+                    console.error('Connection error:', error);
+                    updateStatus(false);
+                    addSystemMessage('✗ Connection failed');
+                    attemptReconnect();
+                });
+            } catch (error) {
+                console.error('Error creating WebSocket:', error);
+                addSystemMessage('✗ Error: ' + error.message);
+                attemptReconnect();
+            }
+        }
+
+        function attemptReconnect() {
+            if (reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                const delay = Math.min(1000 * Math.pow(2, reconnectAttempts - 1), 10000);
+                console.log('Reconnecting in ' + delay + 'ms (attempt ' + reconnectAttempts + ')');
+                addSystemMessage('⟳ Retrying connection... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')');
+                setTimeout(connect, delay);
+            } else {
+                addSystemMessage('✗ Failed to connect after ' + maxReconnectAttempts + ' attempts');
+                disableInputs();
+            }
+        }
+
+        function displayMessage(sender, content, isSent) {
+            const isEmpty = messageContainer.querySelector('.empty-state');
+            if (isEmpty) {
+                messageContainer.innerHTML = '';
+            }
+
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message ' + (isSent ? 'sent' : 'received');
+            messageEl.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div>${escapeHtml(content)}</div>
+            `;
+            messageContainer.appendChild(messageEl);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function addSystemMessage(text) {
+            const isEmpty = messageContainer.querySelector('.empty-state');
+            if (isEmpty) {
+                messageContainer.innerHTML = '';
+            }
+
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message system';
+            messageEl.textContent = text;
+            messageContainer.appendChild(messageEl);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const sender = senderInput.value || 'User';
+            const content = messageInput.value.trim();
+
+            if (content && stompClient && stompClient.connected) {
+                try {
+                    const message = {
+                        sender: sender,
+                        content: content
+                    };
+
+                    stompClient.send('/app/chat', {}, JSON.stringify(message));
+                    displayMessage(sender, content, true);
+                    messageInput.value = '';
+                    messageInput.focus();
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    addSystemMessage('✗ Error sending message');
+                }
+            }
+        }
+
+        function clearMessages() {
+            messageContainer.innerHTML = '<div class="empty-state">No messages yet...</div>';
+        }
+
+        function updateStatus(connected) {
+            if (connected) {
+                statusIndicator.classList.add('connected');
+                statusText.textContent = 'Connected';
+                statusIndicator.style.animation = 'none';
+            } else {
+                statusIndicator.classList.remove('connected');
+                statusText.textContent = 'Disconnected';
+                statusIndicator.style.animation = 'pulse 1s infinite';
+            }
+        }
+
+        function enableInputs() {
+            senderInput.disabled = false;
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+        }
+
+        function disableInputs() {
+            senderInput.disabled = true;
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Handle Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Connect on page load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking libraries...');
+            
+            // Check if SockJS is available
+            if (typeof SockJS === 'undefined') {
+                addSystemMessage('✗ SockJS library not loaded');
+                return;
+            }
+            
+            if (typeof Stomp === 'undefined') {
+                addSystemMessage('✗ STOMP library not loaded');
+                return;
+            }
+            
+            console.log('Libraries loaded successfully');
+            connect();
+        });
+
+        // Handle connection loss
+        window.addEventListener('beforeunload', function() {
+            if (stompClient && stompClient.connected) {
+                stompClient.disconnect();
+            }
+        });
+
+        // Check server health before connecting
+        function checkServerHealth() {
+            fetch('/api/health')
+                .then(r => r.json())
+                .then(data => {
+                    console.log('Server is healthy:', data);
+                    connect();
+                })
+                .catch(err => {
+                    console.error('Server health check failed:', err);
+                    addSystemMessage('✗ Cannot reach server. Make sure it is running on port 8080');
+                });
+        }
+
+        // Initial connection attempt - wait for DOM to be ready
+        console.log('Script initialized');
+        
+        function waitForLibraries(callback, attempts = 0) {
+            if (attempts > 10) {
+                addSystemMessage('✗ Failed to load required libraries from CDN');
+                updateStatus(false);
+                return;
+            }
+            
+            if (typeof SockJS !== 'undefined' && typeof Stomp !== 'undefined') {
+                console.log('Libraries loaded successfully');
+                callback();
+            } else {
+                console.log('Waiting for libraries... attempt ' + (attempts + 1));
+                setTimeout(() => waitForLibraries(callback, attempts + 1), 500);
+            }
+        }
+        
+        function initializeApp() {
+            console.log('Initializing app...');
+            // Verify all required elements exist
+            if (!messageContainer || !messageInput || !senderInput) {
+                console.error('Required DOM elements not found');
+                return;
+            }
+            
+            // Check server health before connecting
+            fetch('/api/health')
+                .then(r => r.json())
+                .then(data => {
+                    console.log('Server is healthy:', data);
+                    addSystemMessage('⟳ Connecting to WebSocket...');
+                    
+                    // Wait for libraries to load
+                    waitForLibraries(() => {
+                        setTimeout(connect, 500);
+                    });
+                })
+                .catch(err => {
+                    console.error('Server health check failed:', err);
+                    addSystemMessage('✗ Cannot reach server. Make sure it is running on port 8080');
+                    updateStatus(false);
+                });
+        }
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
