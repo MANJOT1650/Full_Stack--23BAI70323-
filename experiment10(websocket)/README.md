@@ -1,53 +1,76 @@
-# Experiment 10: WebSocket Chat Application
+# WebSocket Live Chat Application
 
-This repository contains the full-stack implementation of a real-time Chat Application. It uses WebSockets for bi-directional communication, featuring a Java Spring Boot backend and a modern React frontend built with Vite.
+A real-time chat application using WebSocket with backend on port 8080 and frontend on port 5173.
 
-## 🚀 Technologies Used
+## Project Structure
 
-**Backend (Demo_WebSocket):**
-- **Java Spring Boot**
-- **Spring WebSocket**: Core WebSocket support in the Spring ecosystem.
-- **Spring Messaging**: For STOMP (Simple Text Oriented Messaging Protocol) message routing.
-- **SockJS Fallback**: Provides a WebSocket-like object with fallback capabilities for older browsers.
+- `backend/` - WebSocket server running on port 8080
+- `frontend/` - React chat application running on port 5173
 
-**Frontend (frontend):**
-- **React**: Component-based UI library.
-- **Vite**: Next-generation frontend tooling for incredibly fast hot module replacement and builds.
-- **@stomp/stompjs & sockjs-client**: Libraries to establish WebSocket connections, handle fallbacks, and communicate via STOMP.
+## Setup Instructions
 
-## 🏗️ Architecture & Flow
+### Backend Setup
 
-1. **Client Connection**: The React frontend uses `sockjs-client` to connect to the backend endpoint at `http://localhost:8080/ws`.
-2. **STOMP Protocol**: Upon successful connection, `@stomp/stompjs` establishes a STOMP session over the SockJS channel.
-3. **Subscribing**: The frontend client subscribes to the topic `/topic/messages`. Whenever the backend broadcasts a message to this topic, the client receives it and dynamically updates the chat UI.
-4. **Publishing**: When a user types a message and clicks send, the STOMP client sends a JSON payload to the backend application destination `/app/chat`.
-5. **Message Routing**: The backend Spring Controller receives the incoming message and relays it back to the active subscribers on `/topic/messages`.
-
-## 🛠️ How to Run Locally
-
-### 1. Start the Backend Server
-Navigate to the `Demo_WebSocket` directory, which handles the WebSocket Broker. A convenient batch script is provided for Windows environments.
-
+1. Navigate to the backend directory:
 ```bash
-cd Demo_WebSocket
-.\run.bat
+cd backend
 ```
-*(By default, this server listens on port **8080**).*
 
-### 2. Start the Frontend Server
-Open a **new terminal window**, navigate to the `frontend` directory, install the Node packages, and spin up the development server.
+2. Install dependencies:
+```bash
+npm install
+```
 
+3. Start the WebSocket server:
+```bash
+npm start
+```
+
+The backend will run on **http://localhost:8080**
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
 ```bash
 cd frontend
+```
+
+2. Install dependencies (if not already installed):
+```bash
 npm install
+```
+
+3. Start the development server:
+```bash
 npm run dev
 ```
-*(By default, the Vite server will run on `http://localhost:5173/`. Open this URL in your web browser).*
 
-## Screenshot
-![Application Screenshot](./ss/image.png)
+The frontend will run on **http://localhost:5173**
 
-## 💡 Common Issues & Fixes
-- **Port Clashes**: If port `8080` is occupied by another process, execute the provided `kill-port.bat` script inside `Demo_WebSocket` to free up the port before running `run.bat`.
-- **WebSocket Connection Failed**: Ensure the Spring Boot backend has successfully booted *before* attempting to send messages from the frontend.
-- **"No inputs were found..." TypeScript Error**: This pure-JS project uses `jsconfig.json`. If you previously saw TypeScript errors with `tsconfig.json`, that file was safely removed to favor a standard JS environment.
+## How to Use
+
+1. Open multiple browser tabs or different browsers to **http://localhost:5173**
+2. Enter a username in each tab
+3. Start chatting - messages will appear in real-time across all connected clients
+4. Connection status is shown (green = connected, red = disconnected)
+
+## Features
+
+- Real-time messaging using WebSocket
+- Multiple users can chat simultaneously
+- Connection status indicator
+- Username support
+- Timestamp on messages
+- System notifications for join/leave events
+- Clean, modern UI
+
+## Ports
+
+- **Backend**: 8080
+- **Frontend**: 5173
+
+## Technologies Used
+
+- **Backend**: Node.js with `ws` library
+- **Frontend**: React with Vite
+- **Protocol**: Native WebSocket

@@ -1,58 +1,143 @@
-import { useState, useEffect } from 'react';
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import { useState, useEffect, useRef } from 'react';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
-    const [stompClient, setStompClient] = useState(null);
+    const [username, setUsername] = useState('');
+    const [isConnected, setIsConnected] = useState(false);
+    const wsRef = useRef(null);
 
     useEffect(() => {
         // Connect to WebSocket server
-        const socket = new SockJS('http://localhost:8080/ws');
-        const client = Stomp.over(socket);
+        wsRef.current = new WebSocket('ws://localhost:8080');
 
-        client.connect({}, () => {
+        wsRef.current.onopen = () => {
             console.log('Connected to WebSocket');
-            client.subscribe('/topic/messages', (msg) => {
-                const receivedMessage = JSON.parse(msg.body);
-                setMessages((prev) => [...prev, receivedMessage]);
-            });
-        });
+            setIsConnected(true);
+        };
 
-        setStompClient(client);
+        wsRef.current.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            setMessages((prev) => [...prev, data]);
+        };
+
+        wsRef.current.onclose = () => {
+            console.log('Disconnected from WebSocket');
+            setIsConnected(false);
+        };
+
+        wsRef.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            setIsConnected(false);
+        };
 
         return () => {
-            if (client) client.disconnect();
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
         };
     }, []);
 
     const sendMessage = () => {
-        if (stompClient && message) {
-            const chatMessage = { sender: 'User', content: message };
-            stompClient.send('/app/chat', {}, JSON.stringify(chatMessage));
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && message) {
+            const chatMessage = {
+                type: 'chat',
+                username: username || 'Anonymous',
+                message: message
+            };
+            wsRef.current.send(JSON.stringify(chatMessage));
             setMessage('');
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+
     return (
-        <div>
-            <div className="chat-box" style={{ height: '300px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+            <div style={{ marginBottom: '20px' }}>
+                <input 
+                    type="text" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    placeholder="Enter your username..."
+                    style={{ padding: '8px', marginRight: '10px', width: '200px' }}
+                />
+                <span style={{ color: isConnected ? 'green' : 'red' }}>
+                    {isConnected ? '● Connected' : '● Disconnected'}
+                </span>
+            </div>
+            
+            <div 
+                className="chat-box" 
+                style={{ 
+                    height: '400px', 
+                    overflowY: 'auto', 
+                    border: '1px solid #ccc', 
+                    padding: '15px', 
+                    marginBottom: '15px',
+                    borderRadius: '8px',
+                    backgroundColor: '#f5f5f5'
+                }}
+            >
                 {messages.map((msg, index) => (
-                    <div key={index}>
-                        <strong>{msg.sender}:</strong> {msg.content}
+                    <div 
+                        key={index} 
+                        style={{ 
+                            marginBottom: '10px',
+                            padding: '8px',
+                            backgroundColor: msg.type === 'system' ? '#e0e0e0' : '#ffffff',
+                            borderRadius: '4px',
+                            borderLeft: msg.type === 'system' ? '4px solid #666' : '4px solid #007bff'
+                        }}
+                    >
+                        {msg.type === 'system' ? (
+                            <em style={{ color: '#666' }}>{msg.message}</em>
+                        ) : (
+                            <div>
+                                <strong style={{ color: '#007bff' }}>{msg.username}</strong>
+                                <span style={{ color: '#999', fontSize: '0.8em', marginLeft: '10px' }}>
+                                    {msg.timestamp}
+                                </span>
+                                <div style={{ marginTop: '5px' }}>{msg.message}</div>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
-            <div>
+            
+            <div style={{ display: 'flex', gap: '10px' }}>
                 <input 
                     type="text" 
                     value={message} 
                     onChange={(e) => setMessage(e.target.value)} 
+                    onKeyPress={handleKeyPress}
                     placeholder="Type a message..."
-                    style={{ marginRight: '10px', padding: '5px' }}
+                    disabled={!isConnected}
+                    style={{ 
+                        flex: 1, 
+                        padding: '10px', 
+                        borderRadius: '4px',
+                        border: '1px solid #ccc'
+                    }}
                 />
-                <button onClick={sendMessage}>Send</button>
+                <button 
+                    onClick={sendMessage} 
+                    disabled={!isConnected || !message}
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: isConnected && message ? 'pointer' : 'not-allowed'
+                    }}
+                >
+                    Send
+                </button>
             </div>
         </div>
     );
